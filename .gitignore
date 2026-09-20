@@ -1,0 +1,12 @@
+.DS_Store
+.build/
+dist/
+*.xcuserstate
+.env
+.env.*
+!.env.example
+*.p12
+*.pfx
+*.key
+*.mobileprovision
+*.provisionprofile
