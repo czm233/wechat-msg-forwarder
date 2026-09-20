@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOURCE="$ROOT/dist/WeChat Chat Exporter.app"
-DESTINATION="${INSTALL_DIR:-$HOME/Applications}/WeChat Chat Exporter.app"
+DESTINATION="${INSTALL_DIR:-/Applications}/WeChat Chat Exporter.app"
 
 "$ROOT/Scripts/make-app.sh"
 mkdir -p "$(dirname "$DESTINATION")"

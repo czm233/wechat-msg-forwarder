@@ -63,6 +63,7 @@ APPEX="$APP/Contents/PlugIns/WeChatChatExporterShare.appex"
 mkdir -p "$APPEX/Contents/MacOS" "$APPEX/Contents/Resources"
 cp "$BIN_DIR/WeChatChatExporterShare" "$APPEX/Contents/MacOS/WeChatChatExporterShare"
 cp "$ROOT/Resources/Share-Info.plist" "$APPEX/Contents/Info.plist"
+cp "$ROOT/Resources/AppIcon.icns" "$APPEX/Contents/Resources/AppIcon.icns"
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $APP_ID.Share" "$APPEX/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :MWCEAppGroupIdentifier $APP_GROUP" "$APPEX/Contents/Info.plist"
 for lproj in "$ROOT/Resources/ShareLocalizations"/*.lproj; do

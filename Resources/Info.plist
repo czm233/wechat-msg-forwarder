@@ -9,8 +9,8 @@
   <key>CFBundleName</key><string>WeChat Chat Exporter</string>
   <key>CFBundleDisplayName</key><string>WeChat Chat Exporter</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>0.1.0</string>
-  <key>CFBundleVersion</key><string>1</string>
+  <key>CFBundleShortVersionString</key><string>0.1.1</string>
+  <key>CFBundleVersion</key><string>2</string>
   <key>LSMinimumSystemVersion</key><string>14.0</string>
   <key>MWCEAppGroupIdentifier</key><string>377U5HWB3A.com.czm.macos-wechat-chat-exporter.shared</string>
   <key>NSHumanReadableCopyright</key><string>Local-only WeChat chat export utility.</string>

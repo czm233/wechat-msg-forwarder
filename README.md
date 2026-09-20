@@ -5,7 +5,7 @@ A minimal, local-only macOS utility that receives chat ZIP files from WeChat's
 
 ## Features
 
-- One macOS Share Extension: **Copy Chat Export**
+- One macOS Share Extension: **WeChat Chat Exporter**
 - Durable App Group storage with atomic `Staging -> Ready` delivery
 - File-URL clipboard output, ready to paste into any compatible app
 - Local export history with copy, reveal and delete actions
@@ -21,7 +21,7 @@ A minimal, local-only macOS utility that receives chat ZIP files from WeChat's
 flowchart LR
     A[Select messages in WeChat] --> B[Forward to Other Apps]
     B --> C[WeChat creates a ZIP]
-    C --> D[Copy Chat Export extension]
+    C --> D[WeChat Chat Exporter extension]
     D --> E[App Group Staging]
     E -->|atomic move| F[App Group Ready]
     F --> G[File URL on clipboard]
@@ -94,7 +94,7 @@ replacement for Developer ID distribution.
 References: [App Group authorization](https://developer.apple.com/documentation/xcode/accessing-app-group-containers),
 [Notarization](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution).
 
-Install a locally built copy:
+Install a locally built copy into `/Applications`:
 
 ```bash
 Scripts/install-dev-build.sh
@@ -106,16 +106,16 @@ Run tests:
 swift test
 ```
 
-Create a ZIP and SHA-256 checksum for a GitHub Release:
+Create a DMG and SHA-256 checksum for a GitHub Release:
 
 ```bash
 Scripts/package-app.sh
 ```
 
-The script rebuilds the app, packages it under `dist/`, then extracts the ZIP and
-verifies the bundled signatures. An Apple Development-signed package is a local
+The script rebuilds and verifies the signed app, packages it under `dist/`, and
+verifies the disk image. Open the DMG and drag the app onto Applications. An Apple Development-signed package is a local
 development preview, not a notarized public release; macOS may block a downloaded
-copy. A Git tag alone does not produce an application download. Attach the ZIP
+copy. A Git tag alone does not produce an application download. Attach the DMG
 and checksum to the corresponding GitHub Release. GitHub Actions currently runs
 tests only, because no signing credentials are configured on the repository.
 

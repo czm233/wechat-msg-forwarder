@@ -5,24 +5,35 @@ import Foundation
 @objc(MWCEShareViewController)
 final class ShareViewController: NSViewController {
     private var receiveTask: Task<Void, Never>?
+    private let indicator = NSProgressIndicator()
+    private let resultIcon = NSImageView()
+    private let message = NSTextField(labelWithString: "正在保存聊天记录…")
 
     override func loadView() {
-        let panel = NSView(frame: NSRect(x: 0, y: 0, width: 280, height: 86))
-        let indicator = NSProgressIndicator()
+        let panel = NSView(frame: NSRect(x: 0, y: 0, width: 300, height: 112))
         indicator.style = .spinning
         indicator.controlSize = .small
         indicator.startAnimation(nil)
         indicator.translatesAutoresizingMaskIntoConstraints = false
 
-        let message = NSTextField(labelWithString: "正在保存聊天记录…")
         message.font = .systemFont(ofSize: 13, weight: .medium)
         message.translatesAutoresizingMaskIntoConstraints = false
+        resultIcon.translatesAutoresizingMaskIntoConstraints = false
+        resultIcon.imageScaling = .scaleProportionallyUpOrDown
+        resultIcon.isHidden = true
 
         panel.addSubview(indicator)
         panel.addSubview(message)
+        panel.addSubview(resultIcon)
         NSLayoutConstraint.activate([
             indicator.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: 24),
             indicator.centerYAnchor.constraint(equalTo: panel.centerYAnchor),
+            indicator.widthAnchor.constraint(equalToConstant: 24),
+            indicator.heightAnchor.constraint(equalToConstant: 24),
+            resultIcon.centerXAnchor.constraint(equalTo: indicator.centerXAnchor),
+            resultIcon.centerYAnchor.constraint(equalTo: indicator.centerYAnchor),
+            resultIcon.widthAnchor.constraint(equalTo: indicator.widthAnchor),
+            resultIcon.heightAnchor.constraint(equalTo: indicator.heightAnchor),
             message.leadingAnchor.constraint(equalTo: indicator.trailingAnchor, constant: 12),
             message.centerYAnchor.constraint(equalTo: panel.centerYAnchor),
             message.trailingAnchor.constraint(lessThanOrEqualTo: panel.trailingAnchor, constant: -24),
@@ -31,14 +42,26 @@ final class ShareViewController: NSViewController {
         preferredContentSize = panel.frame.size
     }
 
-    override func viewWillAppear() {
-        super.viewWillAppear()
+    override func viewDidAppear() {
+        super.viewDidAppear()
         guard receiveTask == nil, let request = extensionContext else { return }
         receiveTask = Task { @MainActor in
             do {
                 let savedFile = try await ShareReceiver.receive(request.inputItems)
                 NSPasteboard.general.clearContents()
-                _ = NSPasteboard.general.writeObjects([savedFile as NSURL])
+                guard NSPasteboard.general.writeObjects([savedFile as NSURL]) else {
+                    throw NSError(domain: "com.macos-wechat-chat-exporter.share", code: 2,
+                                  userInfo: [NSLocalizedDescriptionKey: "聊天记录已保存，但无法复制到剪贴板。请在应用中重新复制。"])
+                }
+                indicator.stopAnimation(nil)
+                indicator.isHidden = true
+                resultIcon.image = NSImage(systemSymbolName: "checkmark.circle.fill", accessibilityDescription: "保存成功")
+                resultIcon.contentTintColor = .systemGreen
+                resultIcon.isHidden = false
+                message.stringValue = "已保存并复制到剪贴板"
+                // Let the success state render, then keep it visible before the
+                // host dismisses the extension. Never resize or move the host window.
+                try await Task.sleep(for: .seconds(1))
                 request.completeRequest(returningItems: nil)
             } catch {
                 request.cancelRequest(withError: NSError(
